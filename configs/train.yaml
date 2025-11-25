@@ -1,0 +1,8 @@
+# configs/train.yaml
+model_name: yolov8n.pt          # 可改 yolov8s.pt 等
+data_path: coco8.yaml           # 先用內建 coco8 測試，之後換成你自己的 dataset yaml
+epochs: 5                       # 測試階段先設小一點
+img_size: 640
+device: mps                     # Mac M3 用 'mps'，其他環境可用 'cpu' 或 'cuda'
+experiment_name: YOLO-Pi-Edge-MLOps
+

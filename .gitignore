@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+
+# virtualenv
+venv-mlops/
+
+# macOS
+.DS_Store
+
+# MLflow
+mlruns/
+
+# Ultralytics outputs
+runs/
+
+# runtime data
+feedback_data/
+
+# logs
+*.log
