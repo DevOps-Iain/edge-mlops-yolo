@@ -1,33 +1,22 @@
-# Dockerfile
 FROM python:3.9-slim
 
 WORKDIR /app
 
-# 安裝必要的系統底層依賴 (解決 OpenCV 在 Linux 上的缺套件問題)
-RUN apt-get update && apt-get install -y \
-    libgl1 \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender1 \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# 建議用 headless 版 OpenCV，容器更穩
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libglib2.0-0 libsm6 libxext6 libxrender1 \
+  && rm -rf /var/lib/apt/lists/*
 
+RUN pip install --no-cache-dir \
+    fastapi "uvicorn[standard]" numpy opencv-python-headless \
+    ultralytics \
+    onnx==1.16.2 onnxruntime==1.19.2
 
-# 安裝 Python 套件
-RUN pip install --no-cache-dir ultralytics fastapi "uvicorn[standard]" numpy opencv-python
+ENV YOLO_CONFIG_DIR=/tmp/Ultralytics \
+    PYTHONUNBUFFERED=1
 
-# 複製程式碼與模型
-COPY src/app.py /app/
-COPY best.onnx /app/
-RUN mkdir -p /app/feedback_data
-
-# 環境變數（可被 docker-compose.yml 覆蓋）
-ENV MODEL_PATH=/app/best.onnx
-ENV FEEDBACK_DIR=/app/feedback_data
-
-EXPOSE 8000
+COPY src/app.py /app/app.py
+COPY best.onnx /app/best.onnx
+RUN mkdir -p /app/feedback_data /tmp/Ultralytics
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
-
-
